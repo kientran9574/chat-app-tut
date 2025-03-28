@@ -5,8 +5,13 @@ import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-const app = express();
+import { Server } from "socket.io";
+import http from "http";
+
 dotenv.config();
+const app = express();
+const server = http.createServer(app); // Sử dụng chung server với Express
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(
@@ -15,9 +20,34 @@ app.use(
     credentials: true,
   })
 );
+
+// Routes API
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
-app.listen(process.env.PORT, () => {
-  console.log(`Example app listening on port ${process.env.PORT}`);
+
+// Khởi tạo Socket.IO trên cùng server Express
+export const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173"],
+  },
+});
+const userSocketMap = {}; // {userId: socketId}
+export function getReceiverSocketId(userId) {
+  return userSocketMap[userId];
+}
+io.on("connection", (socket) => {
+  const userId = socket.handshake.query.userId;
+  if (userId) userSocketMap[userId] = socket.id;
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  socket.on("disconnect", () => {
+    delete userSocketMap[userId];
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+  });
+});
+
+// Lắng nghe cổng
+const PORT = process.env.PORT || 4500;
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
   connectDB();
 });

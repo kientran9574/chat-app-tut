@@ -1,13 +1,16 @@
 import User from "../models/users.model.js";
 import Message from "../models/message.model.js";
 import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../index.js";
 export const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUser = req.user._id;
+    console.log("🚀 ~ getUsersForSidebar ~ loggedInUser:", loggedInUser);
     // tìm tất cả người dùng nhưng không tìm người dùng hiện tại đang đăng nhập
     const filteredUsers = await User.find({
       _id: { $ne: loggedInUser },
     }).select("-password");
+    console.log("🚀 ~ getUsersForSidebar ~ filteredUsers:", filteredUsers);
     return res.status(200).json(filteredUsers);
   } catch (error) {
     console.error("Error in getUsersForSidebar: ", error.message);
@@ -39,22 +42,23 @@ export const sendMessage = async (req, res) => {
     const senderId = req.user._id;
     let imageUrl;
     if (image) {
-      const imageResponse = await cloudinary.uploader.upload(image, {
-        folder: "messages", // Thư mục lưu ảnh
-        quality: "auto:good", // Giảm dung lượng nhưng vẫn giữ chất lượng tốt
-        format: "webp", // Chuyển sang WEBP để tối ưu
-        timeout: 10000, // Hạn chế upload lâu quá 10s
-      });
+      const imageResponse = await cloudinary.uploader.upload(image);
       imageUrl = imageResponse.secure_url;
     }
     const newMessage = new Message({
       senderId,
       receiverId,
-      text,
+      text: text || "",
       image: imageUrl,
     });
     await newMessage.save();
     // real-time
-    
-  } catch (error) {}
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+    res.status(201).json(newMessage);
+  } catch (error) {
+    console.log(error);
+  }
 };

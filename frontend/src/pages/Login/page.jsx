@@ -19,10 +19,11 @@ const LoginPage = () => {
       password: "",
     },
   });
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, event) => {
+    event?.preventDefault();
     try {
-      await login(data);
-      console.log(data);
+      const result = await login(data);
+      console.log("🚀 ~ onSubmit ~ result:", result)
     } catch (error) {
       console.log("🚀 ~ onSubmit ~ error:", error);
     }
@@ -93,7 +94,7 @@ const LoginPage = () => {
           <div className="text-center">
             <p className="text-base-content/60">
               Already have an account?{" "}
-              <Link to="/signup" className="link link-primary">
+              <Link to="/sign-up" className="link link-primary">
                 Sign Up
               </Link>
             </p>

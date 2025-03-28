@@ -64,6 +64,7 @@ export const login = async (req, res) => {
     generateToken(users.id, res);
     // Chuyển object và xóa password trước khi trả về
     const userResponse = users.toObject();
+    console.log("🚀 ~ login ~ userResponse:", userResponse);
     delete userResponse.password;
     return res.status(201).json({
       message: "Đăng nhập thành công",

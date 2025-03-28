@@ -9,10 +9,9 @@ function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
-    if (!authUser) {
-      checkAuth(); // 🔥 Chỉ gọi API nếu authUser chưa có
-    }
-  }, [authUser, checkAuth]);
+    // Tí nữa dùng useRef ở đây để tối ưu 
+    checkAuth();
+  }, [checkAuth]);
 
   if (isCheckingAuth && !authUser) {
     return (
@@ -21,8 +20,6 @@ function App() {
       </div>
     );
   }
-
-  console.log("🚀 ~ App ~ authUser:", authUser);
   return <div>{routerElement}</div>;
 }
 

@@ -31,7 +31,8 @@ const SignUpPage = () => {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, event) => {
+    event?.preventDefault();
     try {
       await signup(data);
       navigate("/login");

@@ -12,6 +12,11 @@ const messageSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    groupId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
+      required: false, // Bắt buộc nếu là chat nhóm, không cần nếu là chat 1-1
+    },
     text: {
       type: String,
     },

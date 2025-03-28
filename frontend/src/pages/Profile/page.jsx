@@ -20,7 +20,6 @@ const ProfilePage = () => {
   //     await updateProfile({ profilePic: base64Image });
   //   };
   // };
-  console.log(authUser);
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -30,7 +29,6 @@ const ProfilePage = () => {
       const base64Image = reader.result;
       setSelectedImg(base64Image);
       const result = await updateProfile({ profilePic: base64Image });
-      console.log("🚀 ~ reader.onload= ~ base64Image:", result);
     };
   };
   return (

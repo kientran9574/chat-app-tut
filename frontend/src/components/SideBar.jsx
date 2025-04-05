@@ -14,25 +14,25 @@ const SideBar = () => {
     ? users.filter((user) => onlineUsers?.includes(user._id))
     : users;
   return (
-    <aside className="w-20 lg:w-72 overflow-y-auto border-r border-base-300 flex flex-col">
+    <aside className="w-22 lg:w-72 overflow-y-auto border-r border-base-300 flex flex-col">
       <div className="border-b border-base-300 w-full px-4 pb-4">
-        <div className="flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <User className="size-5"></User>
           <h1>Contact</h1>
         </div>
         <div className="flex items-center mt-3">
-          <label className="flex items-center gap-3">
+          <label className="flex  items-center gap-3">
             <input
               type="checkbox"
               value={showOnlineOnly}
-              className="size-6 checkbox"
+              className="size-4 lg:size-6 checkbox"
               onChange={(error) => setShowOnlineOnly(error.target.checked)}
             ></input>
-            <span className="">Show online only</span>
+            <span className="text-xs lg:text-lg">Show online only</span>
           </label>
         </div>
       </div>
-      <div className="overflow-y-auto max-h-full space-y-2">
+      <div className="mx-auto py-2 lg:mx-0 overflow-y-auto max-h-full space-y-2 ">
         {filterUserd?.map((user) => (
           <div
             className={`rounded w-full bg-base-100 flex items-center px-2 py-2 hover:bg-base-300 transition-all duration-300 gap-3 cursor-pointer
@@ -53,12 +53,14 @@ const SideBar = () => {
               className="size-12 object-cover rounded-full"
             />
             <div className="flex flex-col gap-2">
-              <p className="text-primary text-lg font-bold">{user.fullName}</p>
+              <p className="hidden lg:block text-primary text-lg font-bold">
+                {user.fullName}
+              </p>
               {onlineUsers?.includes(user._id) && (
                 <span className="text-green-500">Online</span>
               )}
               {!onlineUsers?.includes(user._id) && (
-                <span className="text-slate-300">Office</span>
+                <span className=" text-slate-300 ">Office</span>
               )}
             </div>
           </div>

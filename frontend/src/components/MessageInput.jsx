@@ -1,32 +1,35 @@
 import React, { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
+import { Image, Send, X, Smile } from "lucide-react";
+import GifPicker from "gif-picker-react";
+
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imgPreview, setImgPreview] = useState(null);
+  const [showGifPicker, setShowGifPicker] = useState(false);
   const fileInputRef = useRef(null);
-  const { messages, sendMessages } = useChatStore();
+  const { sendMessages } = useChatStore();
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setImgPreview(reader.result);
-    };
+    reader.onloadend = () => setImgPreview(reader.result);
     reader.readAsDataURL(file);
   };
+
   const removeImage = () => {
     setImgPreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() && !imgPreview) return;
     try {
       await sendMessages({
-        text: text.trim(),
+        text: text.trim() || "",
         image: imgPreview || null,
       });
-      // clear form
       setText("");
       setImgPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -34,6 +37,19 @@ const MessageInput = () => {
       console.error("Failed to send message:", error);
     }
   };
+
+  const handleGifClick = async (gif) => {
+    try {
+      await sendMessages({
+        text: "",
+        image: gif.url, // URL của GIF từ Tenor
+      });
+      setShowGifPicker(false); // Ẩn picker sau khi chọn GIF
+    } catch (error) {
+      console.error("Failed to send GIF:", error);
+    }
+  };
+
   return (
     <div className="p-4 w-full">
       {imgPreview && (
@@ -46,8 +62,7 @@ const MessageInput = () => {
             />
             <button
               onClick={removeImage}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300
-          flex items-center justify-center"
+              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300 flex items-center justify-center"
               type="button"
             >
               <X className="size-3" />
@@ -55,9 +70,9 @@ const MessageInput = () => {
           </div>
         </div>
       )}
+
       <form onSubmit={handleSendMessage} className="flex items-center gap-3">
         <div className="flex flex-1 gap-2">
-          {" "}
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -74,10 +89,18 @@ const MessageInput = () => {
           <button
             onClick={() => fileInputRef.current?.click()}
             type="button"
-            className={`hidden sm:flex btn btn-circle
-                     ${imgPreview ? "text-emerald-500" : "text-zinc-400"}`}
+            className={`hidden sm:flex btn btn-circle ${
+              imgPreview ? "text-emerald-500" : "text-zinc-400"
+            }`}
           >
             <Image size={20} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowGifPicker(!showGifPicker)}
+            className="btn btn-circle text-zinc-400"
+          >
+            <Smile size={20} />
           </button>
         </div>
         <button
@@ -88,6 +111,17 @@ const MessageInput = () => {
           <Send size={22} />
         </button>
       </form>
+
+      {showGifPicker && (
+        <div className="mt-2">
+          <GifPicker
+            tenorApiKey="AIzaSyANDXMamAAwVld3Us2QC456BeMGjCx4-YI"
+            onGifClick={handleGifClick}
+            width="100%"
+            height="300px"
+          />
+        </div>
+      )}
     </div>
   );
 };

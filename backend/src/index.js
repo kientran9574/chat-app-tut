@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./lib/dB.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
+import postRoutes from "./routes/post.router.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { Server } from "socket.io";
@@ -24,6 +25,7 @@ app.use(
 // Routes API
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/posts", postRoutes);
 
 // Khởi tạo Socket.IO trên cùng server Express
 export const io = new Server(server, {

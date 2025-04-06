@@ -2,6 +2,7 @@ import User from "../models/users.model.js";
 import Message from "../models/message.model.js";
 import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId, io } from "../index.js";
+import { generationOTP } from "../lib/utils.js";
 export const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUser = req.user._id;

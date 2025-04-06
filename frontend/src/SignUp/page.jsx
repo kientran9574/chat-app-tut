@@ -35,7 +35,7 @@ const SignUpPage = () => {
     event?.preventDefault();
     try {
       await signup(data);
-      navigate("/login");
+      await navigate("/");
     } catch (error) {
       console.log("🚀 ~ onSubmit ~ error:", error);
     }

@@ -1,3 +1,4 @@
+import { randomInt } from "crypto";
 import jwt from "jsonwebtoken";
 
 export const generateToken = (userId, res) => {
@@ -13,4 +14,7 @@ export const generateToken = (userId, res) => {
   });
 
   return token;
+};
+export const generationOTP = () => {
+  return String(randomInt(0, 100000)).padStart("6", 0);
 };

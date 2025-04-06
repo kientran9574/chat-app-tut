@@ -20,6 +20,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    resetOtp: {
+      type: String, // Mã OTP
+      default: null,
+    },
+    resetOtpExpires: {
+      type: Date, // Thời gian hết hạn của OTP
+      default: null,
+    },
   },
   { timestamps: true }
 );

@@ -1,7 +1,8 @@
 import cloudinary from "../lib/cloudinary.js";
-import { generateToken } from "../lib/utils.js";
+import { generateToken, generationOTP } from "../lib/utils.js";
 import User from "../models/users.model.js";
 import bcrypt from "bcryptjs";
+import { sendEmail } from "../lib/nodemailer.js";
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
@@ -113,6 +114,73 @@ export const checkAuth = (req, res) => {
     return res.status(200).json(req.user);
   } catch (error) {
     console.log("Error in checkAuth controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email) {
+      return res.status(400).json({ message: "Email là bắt buộc" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Email không tồn tại" });
+    }
+
+    // Tạo mã OTP ngẫu nhiên (6 chữ số)
+    const otp = generationOTP();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // Hết hạn sau 10 phút
+
+    // Lưu OTP và thời gian hết hạn vào user
+    user.resetOtp = otp;
+    user.resetOtpExpires = otpExpires;
+    await user.save();
+
+    // Gửi email chứa OTP
+    const subject = "Mã OTP để đặt lại mật khẩu";
+    const text = `Mã OTP của bạn là: ${otp}. Mã này có hiệu lực trong 10 phút.`;
+    await sendEmail(email, subject, text);
+
+    res.status(200).json({ message: "Mã OTP đã được gửi đến email của bạn" });
+  } catch (error) {
+    console.log("Error in forgotPassword controller:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const resetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  try {
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "Tất cả các trường là bắt buộc" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Email không tồn tại" });
+    }
+
+    // Kiểm tra OTP
+    if (user.resetOtp !== otp || user.resetOtpExpires < Date.now()) {
+      return res
+        .status(400)
+        .json({ message: "Mã OTP không hợp lệ hoặc đã hết hạn" });
+    }
+
+    // Hash mật khẩu mới
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    // Cập nhật mật khẩu và xóa OTP
+    user.password = hashPassword;
+    user.resetOtp = null;
+    user.resetOtpExpires = null;
+    await user.save();
+
+    res.status(200).json({ message: "Đặt lại mật khẩu thành công" });
+  } catch (error) {
+    console.log("Error in resetPassword controller:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

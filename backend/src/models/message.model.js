@@ -23,6 +23,9 @@ const messageSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    video: {
+      type: String, // URL của video sau khi upload lên Cloudinary
+    },
   },
   { timestamps: true }
 );

@@ -48,7 +48,8 @@ const NavbarPage = ({ children }) => {
               `}
                   >
                     <LogOut className="w-4 h-4" />
-                    <span className="hidden sm:inline">Logout</span>
+                    {/* chỗ này nè tân viết thêm hàm call api tới logout rồi xóa localStorage là được */}
+                    <button className="hidden sm:inline">Logout</button>
                   </Link>
                 </>
               )}

@@ -68,6 +68,14 @@ const ChatContainer = () => {
                   className="sm:max-w-[200px] rounded-md mb-2"
                 />
               )}
+              {message.video && (
+                <video
+                  src={message.video}
+                  controls
+                  className="sm:max-w-[250px] rounded-md mb-2"
+                  onError={(e) => console.log("Video error:", e)}
+                />
+              )}
               {message.text && <p>{message.text}</p>}
             </div>
           </div>

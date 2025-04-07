@@ -21,7 +21,9 @@ app.use(
     credentials: true,
   })
 );
-
+// Tăng giới hạn body parser
+app.use(express.json({ limit: "50mb" })); // Giới hạn 50MB cho JSON (tùy chọn)
+app.use(express.urlencoded({ limit: "50mb", extended: true })); // Giới hạn 50MB cho URL-encoded
 // Routes API
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);

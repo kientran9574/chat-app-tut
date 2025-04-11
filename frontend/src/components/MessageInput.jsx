@@ -50,7 +50,7 @@ const MessageInput = () => {
     if (!response.ok) throw new Error(data.error.message || "Upload failed");
     return data.secure_url;
   };
-  
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imgPreview && !videoPreview) return;
@@ -64,7 +64,7 @@ const MessageInput = () => {
           "video"
         );
       }
-      console.log("video url ơi tôi cần bạn",videoUrl)
+      console.log("video url ơi tôi cần bạn", videoUrl);
       await sendMessages({
         text: text.trim() || "",
         image: imgPreview || null,

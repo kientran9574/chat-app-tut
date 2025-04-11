@@ -9,6 +9,8 @@ import ProfilePage from "./pages/Profile/page";
 import NavbarPage from "./pages/Navbar/page";
 import { AuthMiddleware } from "./auth.middlwares.js";
 import ForgotPassword from "./pages/ForgotPassword/page.jsx";
+import PostLayout from "./pages/Post/layout.jsx";
+import PostHome from "./pages/Post/PostHome.jsx";
 // Route bảo vệ cần đăng nhập
 // function ProtectedRoute() {
 //   const { authUser } = useAuthStore();
@@ -62,6 +64,11 @@ const useRouterElement = () => {
         { path: "/sign-up", element: <SignUpPage /> },
         { path: "/forgot-password", element: <ForgotPassword /> },
       ],
+    },
+    {
+      path: "/home",
+      element: <PostLayout />,
+      children: [{ index: true, element: <PostHome /> }],
     },
   ]);
 

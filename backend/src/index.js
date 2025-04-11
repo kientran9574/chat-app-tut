@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./lib/dB.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
-import postRoutes from "./routes/post.router.js";
+import postRoutes from "./routes/post.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { Server } from "socket.io";

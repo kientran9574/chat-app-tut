@@ -4,6 +4,7 @@ import { connectDB } from "./lib/dB.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import postRoutes from "./routes/post.route.js";
+import likeRoutes from "./routes/like.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { Server } from "socket.io";
@@ -28,7 +29,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true })); // Giới hạn 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/posts", postRoutes);
-
+app.use("/api/likes", likeRoutes);
 // Khởi tạo Socket.IO trên cùng server Express
 export const io = new Server(server, {
   cors: {

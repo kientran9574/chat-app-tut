@@ -86,12 +86,10 @@ export const updateProfile = async (req, res) => {
   try {
     const { profilePic } = req.body;
     const userId = req.user._id;
-    console.log("🚀 ~ updateProfile ~ userId:", userId);
     if (!profilePic) {
       return res.status(400).json({ message: "Profile pic is required" });
     }
     const uploadResponse = await cloudinary.uploader.upload(profilePic);
-    console.log("🚀 ~ updateProfile ~ uploadResponse: server", uploadResponse);
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
@@ -101,7 +99,6 @@ export const updateProfile = async (req, res) => {
         new: true,
       }
     );
-    console.log("🚀 ~ updateProfile ~ updatedUser: server", updatedUser);
     return res.status(200).json(updatedUser);
   } catch (error) {
     console.log("test server", req.body);

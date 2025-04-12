@@ -1,4 +1,13 @@
-import { MoreHorizontal, Pencil, Trash2, X } from "lucide-react";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  X,
+  Heart,
+  MessageCircle,
+  Bookmark,
+  Send,
+} from "lucide-react";
 import { useState, useRef } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import axiosInstance from "../lib/axios";
@@ -13,6 +22,9 @@ const PostCard = ({ post, onUpdatePost }) => {
   const [editText, setEditText] = useState(post.text);
   const [editImage, setEditImage] = useState(post.image);
   const [loading, setLoading] = useState(false);
+  // like
+  const [isLiked, setIsLiked] = useState(post.likes?.includes(authUser?._id));
+  const [likeCount, setLikeCount] = useState(post.likesCount || 0);
   const navigate = useNavigate();
 
   const fileInputRef = useRef(null);
@@ -69,6 +81,34 @@ const PostCard = ({ post, onUpdatePost }) => {
 
   const handleRemoveImage = () => {
     setEditImage(null);
+  };
+  // LIKE
+  const handleLikePost = async () => {
+    const newIsLiked = !isLiked;
+    setIsLiked(newIsLiked);
+    setLikeCount(newIsLiked ? likeCount + 1 : likeCount - 1);
+    try {
+      const res = await axiosInstance.post(`/likes/${post._id}/toggle`);
+
+      // Cập nhật UI ngay lập tức
+      if (res.data.action === "like") {
+        onUpdatePost?.({
+          ...post,
+          likes: [...post.likes, authUser._id],
+          likesCount: res.data.likesCount,
+        });
+      } else if (res.data.action === "unlike") {
+        onUpdatePost?.({
+          ...post,
+          likes: post.likes.filter(
+            (id) => id.toString() !== authUser._id.toString()
+          ),
+          likesCount: res.data.likesCount,
+        });
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Lỗi khi thao tác like");
+    }
   };
 
   return (
@@ -194,10 +234,47 @@ const PostCard = ({ post, onUpdatePost }) => {
 
       {/* Actions */}
       {!isEditing && (
-        <div className="flex justify-between text-sm text-gray-500 border-t pt-2 mt-2">
-          <button className="btn btn-ghost btn-sm">👍 Like</button>
-          <button className="btn btn-ghost btn-sm">💬 Comment</button>
-          <button className="btn btn-ghost btn-sm">↗ Share</button>
+        <div className="space-y-2 pt-2 mt-2">
+          {/* Like, Comment, Share buttons */}
+          <div className="flex justify-between items-center px-2">
+            <div className="flex space-x-4">
+              <button
+                onClick={handleLikePost}
+                className="p-1 focus:outline-none"
+              >
+                <Heart
+                  size={24}
+                  fill={isLiked ? "#ff0000" : "none"}
+                  stroke={isLiked ? "#ff0000" : "currentColor"}
+                  className="transition-all duration-300 hover:scale-110"
+                />
+              </button>
+              <button className="p-1">
+                <MessageCircle size={24} strokeWidth={1.5} />
+              </button>
+              <button className="p-1">
+                <Send size={24} strokeWidth={1.5} />
+              </button>
+            </div>
+            <button className="p-1">
+              <Bookmark size={24} strokeWidth={1.5} />
+            </button>
+          </div>
+
+          {/* Like count */}
+          {likeCount > 0 && (
+            <div className="px-2 text-sm font-semibold">
+              {likeCount} lượt thích
+            </div>
+          )}
+
+          {/* Caption */}
+          {/* {post.text && (
+            <div className="px-2 text-sm">
+              <span className="font-semibold">{post.userId?.fullName}</span>{" "}
+              {post.text}
+            </div>
+          )} */}
         </div>
       )}
     </div>

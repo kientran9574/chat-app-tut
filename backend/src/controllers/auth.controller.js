@@ -75,7 +75,7 @@ export const login = async (req, res) => {
 };
 export const logout = (req, res) => {
   try {
-    res.cookies("jwt", "", { maxAge: 0 });
+    res.cookie("jwt", "", { maxAge: 0 });
     return res.status(200).json({ messsage: "logout thành công" });
   } catch (error) {
     console.log("Error in logout controller", error.message);

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 // Hàm kiểm tra trạng thái đăng nhập (giả lập)
 const isAuthenticated = () => {
-  // Bạn có thể thay bằng logic thực tế như kiểm tra token trong localStorage
   return !!localStorage.getItem("authUser");
 };
 

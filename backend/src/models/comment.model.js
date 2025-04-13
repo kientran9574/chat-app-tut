@@ -18,6 +18,10 @@ const commentSchema = new mongoose.Schema(
       trim: true,
       maxlength: 500,
     },
+    image: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );

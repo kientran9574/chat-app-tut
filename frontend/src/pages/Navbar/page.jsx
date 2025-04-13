@@ -1,9 +1,20 @@
 import React from "react";
 import { LogOut, MessageSquare, Settings, User } from "lucide-react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
+import axiosInstance from "../../lib/axios";
+import toast from "react-hot-toast";
 const NavbarPage = ({ children }) => {
   const { authUser } = useAuthStore();
+  const navigate = useNavigate();
+  const { logout } = useAuthStore();
+  const handleLogout = async () => {
+    const res = logout();
+    if (res) {
+      toast.success("Đăng xuất thành công");
+      navigate("/login");
+    }
+  };
   return (
     <>
       <header className="w-full bg-base-100 border-b border-b-base fixed z-10 backdrop-blur-lg bg-base-100/80 top-0">
@@ -21,15 +32,6 @@ const NavbarPage = ({ children }) => {
               </Link>
             </div>
             <div className="flex items-center gap-4">
-              <Link
-                to={"/settings"}
-                className={`
-              btn btn-sm transition-colors     
-              `}
-              >
-                <Settings className="w-4 h-4" />
-                <span className="hidden sm:inline">Settings</span>
-              </Link>
               {authUser && (
                 <>
                   <Link
@@ -41,16 +43,16 @@ const NavbarPage = ({ children }) => {
                     <User className="w-4 h-4" />
                     <span className="hidden sm:inline">Profile</span>
                   </Link>
-                  <Link
-                    to={"/logout"}
+                  <div
                     className={`
               btn btn-sm transition-colors     
               `}
                   >
                     <LogOut className="w-4 h-4" />
-                    {/* chỗ này nè tân viết thêm hàm call api tới logout rồi xóa localStorage là được */}
-                    <button className="hidden sm:inline">Logout</button>
-                  </Link>
+                    <button className="hidden sm:inline" onClick={handleLogout}>
+                      Logout
+                    </button>
+                  </div>
                 </>
               )}
             </div>

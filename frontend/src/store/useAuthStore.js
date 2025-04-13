@@ -51,8 +51,9 @@ export const useAuthStore = create((set, get) => ({
       set({ isLoggingIn: false });
     }
   },
-  logout: () => {
-    localStorage.removeItem("authUser"); // 🔥 Xóa khỏi localStorage khi đăng xuất
+  logout: async () => {
+    await axiosInstance.post("/auth/logout");
+    localStorage.removeItem("authUser");
     get().disconnectSocket();
     set({ authUser: null });
   },

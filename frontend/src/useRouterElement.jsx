@@ -12,11 +12,10 @@ import ForgotPassword from "./pages/ForgotPassword/page.jsx";
 import PostLayout from "./pages/Post/layout.jsx";
 import PostHome from "./pages/Post/PostHome.jsx";
 // Route bảo vệ cần đăng nhập
-// function ProtectedRoute() {
-//   const { authUser } = useAuthStore();
-//   console.log("kientrandeptrai socket");
-//   return authUser ? <Outlet /> : <Navigate to="/login" replace />;
-// }
+function ProtectedRoute() {
+  const { authUser } = useAuthStore();
+  return authUser ? <Outlet /> : <Navigate to="/login" replace />;
+}
 
 // Route từ chối người đã đăng nhập
 function RejectedRoute() {
@@ -28,7 +27,7 @@ function RejectedRoute() {
 function MainLayout() {
   return (
     <NavbarPage>
-      <Outlet></Outlet>
+      <Outlet />
     </NavbarPage>
   );
 }
@@ -36,7 +35,7 @@ function MainLayout() {
 const useRouterElement = () => {
   const routerElement = useRoutes([
     {
-      path: "/",
+      path: "/message",
       element: (
         <AuthMiddleware>
           <MainLayout />
@@ -47,13 +46,19 @@ const useRouterElement = () => {
           index: true,
           element: <HomePage />, // HomePage sẽ được Outlet hiển thị
         },
+      ],
+    },
+    {
+      path: "/profile", // Route riêng cho profile
+      element: (
+        <AuthMiddleware>
+          <MainLayout></MainLayout>
+        </AuthMiddleware>
+      ),
+      children: [
         {
-          path: "settings",
-          element: <SettingPage />,
-        },
-        {
-          path: "profile",
-          element: <ProfilePage />,
+          index: true,
+          element: <ProfilePage />, // Sẽ render qua Outlet
         },
       ],
     },
@@ -66,8 +71,12 @@ const useRouterElement = () => {
       ],
     },
     {
-      path: "/home",
-      element: <PostLayout />,
+      path: "/",
+      element: (
+        <AuthMiddleware>
+          <PostLayout />
+        </AuthMiddleware>
+      ),
       children: [{ index: true, element: <PostHome /> }],
     },
   ]);
